@@ -1,14 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/almostBlack"
     tools:context=".calculator.CalculatorFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:padding="20dp">
 
-</FrameLayout>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="#DDD8955B"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textStyle="bold"
+                android:textSize="28sp"
+                android:text="@string/calculator_title_text" />
+
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <!-- TODO: Update blank fragment layout -->
+        <TextView
+            android:id="@+id/tv_workings"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:maxLines="2"
+            android:textSize="25sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_results"
+            />
+
+        <TextView
+            android:id="@+id/tv_results"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/almostBlack"
+            android:lines="1"
+            android:maxLines="1"
+            android:text="@string/hello_blank_fragment"
+            android:textSize="40sp"
+            android:textColor="@color/white"
+            android:textAlignment="textEnd"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        style="@style/buttonRow">
+        <Button
+            android:id="@+id/btn_all_clear"
+            style="@style/buttonNumber"
+            android:text="AC"
+            android:background="?android:attr/selectableItemBackground"
+            android:textColor="@color/red"
+            />
+        <Button
+            android:id="@+id/btn_back_space"
+            style="@style/buttonNumber"
+            android:text="⌫"
+            android:textColor="@color/red"
+
+            />
+        <Button
+            android:id="@+id/btn_blank"
+            style="@style/buttonNumber"
+            android:text="" />
+        <Button
+            android:id="@+id/btn_divide"
+            style="@style/buttonOperator"
+            android:text="÷" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/buttonRow">
+        <Button
+            android:id="@+id/btn_seven"
+            style="@style/buttonNumber"
+            android:text="7" />
+        <Button
+            android:id="@+id/btn_eight"
+            style="@style/buttonNumber"
+            android:text="8" />
+        <Button
+            android:id="@+id/btn_nine"
+            style="@style/buttonNumber"
+            android:text="9" />
+        <Button
+            android:id="@+id/btn_multiply"
+            style="@style/buttonOperator"
+            android:text="x" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/buttonRow">
+        <Button
+            android:id="@+id/btn_four"
+            style="@style/buttonNumber"
+            android:text="4" />
+        <Button
+            android:id="@+id/btn_five"
+            style="@style/buttonNumber"
+            android:text="5" />
+        <Button
+            android:id="@+id/btn_six"
+            style="@style/buttonNumber"
+            android:text="6" />
+        <Button
+            android:id="@+id/btn_subtract"
+            style="@style/buttonOperator"
+            android:text="-" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/buttonRow">
+        <Button
+            android:id="@+id/btn_one"
+            style="@style/buttonNumber"
+            android:text="1" />
+        <Button
+            android:id="@+id/btn_two"
+            style="@style/buttonNumber"
+            android:text="2" />
+        <Button
+            android:id="@+id/btn_three"
+            style="@style/buttonNumber"
+            android:text="3" />
+        <Button
+            android:id="@+id/btn_add"
+            style="@style/buttonOperator"
+            android:text="+" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/buttonRow">
+        <Button
+            android:id="@+id/btn_decimal"
+            style="@style/buttonNumber"
+            android:text="." />
+        <Button
+            android:id="@+id/btn_zero"
+            style="@style/buttonNumber"
+            android:text="0" />
+        <Button
+            android:id="@+id/btn_equals"
+            style="@style/buttonNumber"
+            android:layout_weight="2"
+            android:background="@color/orange"
+            android:text="=" />
+
+    </LinearLayout>
+</LinearLayout>
