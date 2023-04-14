@@ -31,7 +31,6 @@ class CalculatorFragment : Fragment() {
     private lateinit var btnEight: Button
     private lateinit var btnNine: Button
     private lateinit var btnZero: Button
-
     private lateinit var btnDivide: Button
     private lateinit var btnMultiply: Button
     private lateinit var btnSubtract: Button
@@ -45,7 +44,6 @@ class CalculatorFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_calculator, container, false)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -213,9 +211,6 @@ class CalculatorFragment : Fragment() {
         viewModel.enterNumber("9")
         println("jason onNineBtnClick")
     }
-
-
-
 
     companion object {
 
