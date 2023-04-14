@@ -45,8 +45,6 @@ class CalculatorFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_calculator, container, false)
-        // <item name="android:background">"?android:attr/selectableItemBackground"</item>
-
 
     }
 
@@ -95,8 +93,38 @@ class CalculatorFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 launch {
-                    viewModel.state.collect{ number ->
-                        resultView.text = getString(R.string.stateNumber1_text_value, number)
+                    viewModel.state1.collect{ number1 ->
+                        resultView.text = getString(R.string.result_text_value, number1)
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                launch {
+                    viewModel.state2.collect{ number2 ->
+                        resultView.text = getString(R.string.result_text_value, number2)
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                launch {
+                    viewModel.operator.collect{ operator ->
+                        resultView.text = getString(R.string.result_text_value, operator)
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                launch {
+                    viewModel.result.collect{ result ->
+                        resultView.text = getString(R.string.result_text_value, result)
                     }
                 }
             }
