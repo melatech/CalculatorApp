@@ -12,6 +12,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.melatech.calculatorapp.R
+import com.melatech.calculatorapp.calculator.util.CalculatorAction
+import com.melatech.calculatorapp.calculator.util.CalculatorOperation
 import kotlinx.coroutines.launch
 
 class CalculatorFragment : Fragment() {
@@ -19,8 +21,6 @@ class CalculatorFragment : Fragment() {
     private val viewModel by viewModels<CalculatorViewModel>()
 
     private lateinit var resultView: TextView
-    private lateinit var workingsView: TextView
-    private lateinit var btnDelete: Button
     private lateinit var btnOne: Button
     private lateinit var btnTwo: Button
     private lateinit var btnThree: Button
@@ -31,12 +31,17 @@ class CalculatorFragment : Fragment() {
     private lateinit var btnEight: Button
     private lateinit var btnNine: Button
     private lateinit var btnZero: Button
-    private lateinit var btnDivide: Button
-    private lateinit var btnMultiply: Button
-    private lateinit var btnSubtract: Button
+
     private lateinit var btnAdd: Button
-    private lateinit var btnDecimal: Button
+    private lateinit var btnSubtract: Button
+    private lateinit var btnMultiply: Button
+    private lateinit var btnDivide: Button
     private lateinit var btnEquals: Button
+
+    private lateinit var btnDecimal: Button
+    private lateinit var btnDelete: Button
+    private lateinit var btnClear: Button
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,8 +55,6 @@ class CalculatorFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         resultView = view.findViewById(R.id.tv_results)
-        workingsView = view.findViewById(R.id.tv_workings)
-        btnDelete = view.findViewById(R.id.btn_all_clear)
         btnZero = view.findViewById(R.id.btn_zero)
         btnOne = view.findViewById(R.id.btn_one)
         btnTwo = view.findViewById(R.id.btn_two)
@@ -63,13 +66,15 @@ class CalculatorFragment : Fragment() {
         btnEight = view.findViewById(R.id.btn_eight)
         btnNine = view.findViewById(R.id.btn_nine)
         btnZero = view.findViewById(R.id.btn_zero)
-
-        btnDivide = view.findViewById(R.id.btn_divide)
-        btnMultiply = view.findViewById(R.id.btn_multiply)
-        btnSubtract = view.findViewById(R.id.btn_subtract)
         btnAdd = view.findViewById(R.id.btn_add)
+        btnSubtract = view.findViewById(R.id.btn_subtract)
+        btnMultiply = view.findViewById(R.id.btn_multiply)
+        btnDivide = view.findViewById(R.id.btn_divide)
+
         btnDecimal = view.findViewById(R.id.btn_decimal)
         btnEquals = view.findViewById(R.id.btn_equals)
+        btnDelete = view.findViewById(R.id.btn_back_space)
+        btnClear = view.findViewById(R.id.btn_all_clear)
 
         btnZero.setOnClickListener { onZeroBtnClick() }
         btnOne.setOnClickListener { onOneBtnClick() }
@@ -86,135 +91,111 @@ class CalculatorFragment : Fragment() {
         btnSubtract.setOnClickListener { onSubtractOperatorClick() }
         btnMultiply.setOnClickListener { onMultiplyOperatorClick() }
         btnDivide.setOnClickListener { onDivideOperatorClick() }
+
+        btnAdd.setOnClickListener { onAddOperatorClick() }
+        btnSubtract.setOnClickListener { onSubtractOperatorClick() }
+        btnMultiply.setOnClickListener { onMultiplyOperatorClick() }
+        btnDivide.setOnClickListener { onDivideOperatorClick() }
+
+        btnDecimal.setOnClickListener {onDecimalClick()}
+        btnDelete.setOnClickListener {onDeleteBtnClick()}
+        btnClear.setOnClickListener {onClearBtnClick()}
         btnEquals.setOnClickListener { onEqualsClick() }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 launch {
-                    viewModel.state1.collect{ number1 ->
-                        resultView.text = getString(R.string.result_text_value, number1)
+                    viewModel.state.collect{ state ->
+                        resultView.text = getString(R.string.result_text_value, state)
                     }
                 }
             }
         }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                launch {
-                    viewModel.state2.collect{ number2 ->
-                        resultView.text = getString(R.string.result_text_value, number2)
-                    }
-                }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                launch {
-                    viewModel.operator.collect{ operator ->
-                        resultView.text = getString(R.string.result_text_value, operator)
-                    }
-                }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                launch {
-                    viewModel.result.collect{ result ->
-                        resultView.text = getString(R.string.result_text_value, result)
-                    }
-                }
-            }
-        }
-
     }
 
-    private fun onClearBtnClick() {
-        viewModel.performClearScreen()
-        println("jason onClearBtnClick")
-    }
+    //---------------------- operation buttons -------------------------
 
     private fun onAddOperatorClick() {
-        viewModel.performOperation("+")
-        println("jason onAddOperatorClick")
+        viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Add))
     }
 
     private fun onSubtractOperatorClick() {
-        viewModel.performOperation("-")
-        println("jason onSubtractOperatorClick")
+        viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Subtract))
     }
 
     private fun onMultiplyOperatorClick() {
-        viewModel.performOperation("*")
-        println("jason onMultiplyOperatorClick")
+        viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Multiply))
     }
 
     private fun onDivideOperatorClick() {
-        viewModel.performOperation("/")
-        println("jason onDivideOperatorClick")
+        viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Divide))
+    }
+
+    private fun onDecimalClick() {
+        viewModel.performCalculation()
     }
 
     private fun onEqualsClick() {
         viewModel.performCalculation()
-        println("jason onEqualsClick")
+    }
+
+    private fun onClearBtnClick() {
+        viewModel.performClearScreen()
+    }
+
+    private fun onDeleteBtnClick() {
+        viewModel.performDeleteBackSpace()
     }
 
     //---------------------- numbers buttons -------------------------
 
     private fun onZeroBtnClick() {
-        viewModel.enterNumber("0")
+        viewModel.onAction(CalculatorAction.Number(0))
         println("jason onOneBtnClick")
     }
 
     private fun onOneBtnClick() {
-        viewModel.enterNumber("1")
+        viewModel.onAction(CalculatorAction.Number(1))
         println("jason onOneBtnClick")
     }
 
     private fun onTwoBtnClick() {
-        viewModel.enterNumber("2")
+        viewModel.onAction(CalculatorAction.Number(2))
         println("jason onTwoBtnClick")
     }
 
     private fun onThreeBtnClick() {
-        viewModel.enterNumber("3")
+        viewModel.onAction(CalculatorAction.Number(3))
         println("jason onThreeBtnClick")
     }
 
     private fun onFourBtnClick() {
-        viewModel.enterNumber("4")
+        viewModel.onAction(CalculatorAction.Number(4))
         println("jason onFourBtnClick")
     }
 
     private fun onFiveBtnClick() {
-        viewModel.enterNumber("5")
+        viewModel.onAction(CalculatorAction.Number(5))
         println("jason onFiveBtnClick")
     }
 
     private fun onSixBtnClick() {
-        viewModel.enterNumber("6")
+        viewModel.onAction(CalculatorAction.Number(6))
         println("jason onSixBtnClick")
     }
 
     private fun onSevenBtnClick() {
-        viewModel.enterNumber("7")
+        viewModel.onAction(CalculatorAction.Number(7))
         println("jason onSevenBtnClick")
     }
 
     private fun onEightBtnClick() {
-        viewModel.enterNumber("8")
+        viewModel.onAction(CalculatorAction.Number(8))
         println("jason onEightBtnClick")
     }
 
     private fun onNineBtnClick() {
-        viewModel.enterNumber("9")
+        viewModel.onAction(CalculatorAction.Number(9))
         println("jason onNineBtnClick")
-    }
-
-    companion object {
-
-        @JvmStatic
-        fun newInstance() = CalculatorFragment()
     }
 }

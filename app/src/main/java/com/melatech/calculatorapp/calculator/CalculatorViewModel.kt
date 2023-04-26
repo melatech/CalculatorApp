@@ -2,103 +2,78 @@ package com.melatech.calculatorapp.calculator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.melatech.calculatorapp.calculator.util.CalculatorAction
+import com.melatech.calculatorapp.calculator.util.CalculatorOperation
+import com.melatech.calculatorapp.data.CalculatorState
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class CalculatorViewModel : ViewModel() {
 
-    private val _state1: MutableStateFlow<String> = MutableStateFlow("")
-    val state1: StateFlow<String> = _state1.asStateFlow()
+    private val _state: MutableStateFlow<CalculatorState> = MutableStateFlow(CalculatorState())
+    val state: StateFlow<CalculatorState> = _state.asStateFlow()
 
-    private val _state2: MutableStateFlow<String> = MutableStateFlow("")
-    val state2: StateFlow<String> = _state2.asStateFlow()
+    fun onAction(action: CalculatorAction) {
 
-    private val _operator: MutableStateFlow<String?> = MutableStateFlow(null)
-    val operator: StateFlow<String?> = _operator.asStateFlow()
+    }
 
-    private val _result: MutableStateFlow<String> = MutableStateFlow("")
-    val result: StateFlow<String> = _result.asStateFlow()
-
-    init {
-        println("jason init")
-        combine(_state1, _operator, _state2) { s1, op, s2 ->
-            println("jason performCalculation2:$s1--$s2--$op")
-
-            val number1 = s1.toInt()
-            val number2 = s2.toInt()
-            val operator1 = op
-            println("jason performCalculation1:number1:$number1--number2:$number2")
-
-            val result = when (operator1) {
-                "+" -> {
-                    number1 + number2
-                    println("jason performCalculation3:$s1--$s2--$op")
+    fun performCalculation() {
+        val number1 = _state.value.operand1.toIntOrNull()
+        val number2 = _state.value.operand2.toIntOrNull()
+        val operator = _state.value.operator
+        if (number1 != null && number2 != null) {
+            val result =
+                when (operator) {
+                    is CalculatorOperation.Add -> (number1 + number2)
+                    is CalculatorOperation.Subtract -> (number1 - number2)
+                    is CalculatorOperation.Multiply -> (number1 * number2)
+                    is CalculatorOperation.Divide -> (number1 / number2)
+                    null -> return
                 }
-                "-" -> {
-                    number1 - number2
-                }
-                "*" -> {
-                    number1 * number2
-                }
-                "/" -> {
-                    number1 / number2
-                }
-                else -> 0
-            }
-            _result.value = result.toString() ?: ""
         }
-            .catch { e ->
-                e.message
-            }
-            .launchIn(viewModelScope)
     }
 
     fun enterNumber(number: String) {
         println("jason enterNumber: $number")
-        println("jason _state1.length: ${_state1.value.length}")
-        println("jason _state2.length: ${_state2.value.length}")
+        println("jason _state1.length: ${_state.value.operand1.length}")
+        println("jason _state2.length: ${_state.value.operand2.length}")
 
-        if (_operator.value == null) {
-            println("jason enterNumber: _operator:${_operator.value}")
-            if (_state1.value.length >= MAX_NUM_LENGTH) {
-                //println("jason enterNumber: _state1.length:${_state1.value.length}")
+        if (_state.value.operator == null) {
+            if (_state.value.operand1.length >= MAX_NUM_LENGTH) {
                 return
             }
-            _state1.value = if (_state1.value == "") {
-                "$number"
-            } else {
-                //"${_state1.value} "
-                "${_state1.value}" + "$number"
-            }
+            _state.value = _state.value.copy(
+                operand1 = _state.value.operand1 + number
+            )
+        }
+        if (_state.value.operand2.length >= MAX_NUM_LENGTH) {
             return
         }
-        if (_state2.value.length >= MAX_NUM_LENGTH) {
-            return
-        }
-        _state2.value = if (_state2.value == "") {
-            "$number"
-        } else {
-            "${_state1.value}" + " " + "${_operator.value}" + " " + "${_state2.value}" + "$number"
+        _state.value = _state.value.copy(
+            operand2 = _state.value.operand2 + number
+        )
+    }
+
+    fun enterOperator(operator: CalculatorOperation) {
+        println("jason enterOperator: $operator")
+        if (_state.value.operand1.isNotBlank()) {
+            _state.value = _state.value.copy(
+                operator = operator
+            )
         }
     }
 
-    fun performOperation(symbol: String) {
-        println("jason performOperation: $symbol")
-        if (_state1.value.isNotBlank()) {
-            _operator.value = symbol
-            _result.value = "${_state1.value}" + " " + "$symbol" + " "
-        }
+    fun enterDecimal() {
     }
-
-    fun performCalculation() = _result.value
 
     fun performClearScreen() {
-        println("jason performDelete")
-        _state1.value = ""
-        _state2.value = ""
-        _operator.value = ""
+    }
+
+    fun performDeleteBackSpace() {
     }
 
     companion object {
         private const val MAX_NUM_LENGTH = 8
     }
 }
+
