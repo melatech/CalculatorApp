@@ -97,16 +97,27 @@ class CalculatorFragment : Fragment() {
         btnMultiply.setOnClickListener { onMultiplyOperatorClick() }
         btnDivide.setOnClickListener { onDivideOperatorClick() }
 
-        btnDecimal.setOnClickListener {onDecimalClick()}
-        btnDelete.setOnClickListener {onDeleteBtnClick()}
-        btnClear.setOnClickListener {onClearBtnClick()}
+        btnDecimal.setOnClickListener { onDecimalClick() }
+        btnDelete.setOnClickListener { onDeleteBtnClick() }
+        btnClear.setOnClickListener { onClearBtnClick() }
         btnEquals.setOnClickListener { onEqualsClick() }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.state.collect{ state ->
-                        resultView.text = getString(R.string.result_text_value, state)
+                    viewModel.state.collect { state ->
+                        resultView.text = getString(
+                            R.string.result_text_value,
+                            state.operand1
+                                    + (when (state.operator) {
+                                is CalculatorOperation.Add -> "+"
+                                is CalculatorOperation.Subtract -> "-"
+                                is CalculatorOperation.Multiply -> "x"
+                                is CalculatorOperation.Divide -> "÷"
+                                null -> ""
+                            })
+                                    + state.operand2
+                        )
                     }
                 }
             }
@@ -140,11 +151,11 @@ class CalculatorFragment : Fragment() {
     }
 
     private fun onClearBtnClick() {
-        viewModel.performClearScreen()
+        viewModel.onAction(CalculatorAction.Clear)
     }
 
     private fun onDeleteBtnClick() {
-        viewModel.performDeleteBackSpace()
+        viewModel.onAction(CalculatorAction.Delete)
     }
 
     //---------------------- numbers buttons -------------------------
